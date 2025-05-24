@@ -52,3 +52,17 @@ export default tseslint.config({
   },
 })
 ```
+
+
+## LIBRERIAS UTILIZADAS EN EL PROYECTO
+
+- Libreria de CSS Daisy UI
+```bash
+npm i -D daisyui@latest
+```
+
+- Use daisyUI with Tailwind CSS CLI
+
+```bash
+npm install tailwindcss@latest @tailwindcss/cli@latest daisyui@latest
+```
