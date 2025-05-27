@@ -64,5 +64,5 @@ npm i -D daisyui@latest
 - Use daisyUI with Tailwind CSS CLI
 
 ```bash
-npm install tailwindcss@latest @tailwindcss/cli@latest daisyui@latest
+npm install tailwindcss@latest @tailwindcss/vite@latest daisyui@latest
 ```
