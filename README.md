@@ -66,3 +66,24 @@ npm i -D daisyui@latest
 ```bash
 npm install tailwindcss@latest @tailwindcss/vite@latest daisyui@latest
 ```
+
+## COMANDOS BASICOS DE GIT
+- Realizar un Commit
+`git commit -m "Descripción del commit o lo que se implementó"`
+- Enviar los cambios al repositorio:
+`git push origin [nombre_rama]`
+- Obtener los cambios del repositorio:
+`git pull origin [nombre_rama]`
+- Crear una nueva rama: 
+`git branch [nombre_rama]`
+
+- Cambiar de rama:
+`git switch [nombre_de_la_rama]`
+- Fusionar las ramas (merge):
+  1. Sitúate en la rama destino (la rama que va a recibir los cambios):
+  `git switch [rama_destino]`
+  2. Asegúrate de tener los últimos cambios:
+  `git pull origin [rama_destino]`
+  3. finalmente ingresamos el siguiente comando con el nombre de la rama de la cual queremos fusionar
+  `git merge [rama_origen]`
+
