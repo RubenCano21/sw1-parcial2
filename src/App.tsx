@@ -8,6 +8,7 @@ import CanvasDropZone from './components/CanvasDropZone';
 function App() {
   const [canvasWidgets, setCanvasWidgets] = useState([]);
   const [draggedWidget, setDraggedWidget] = useState(null);
+  const x= 1;
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
