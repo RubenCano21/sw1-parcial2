@@ -1,29 +1,48 @@
-import { useState } from 'react';
-import './App.css'
-import Navbar from './components/Navbar'
-import Prompt from './pages/Prompt'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './App.css';
+import Navbar from './components/Navbar';
+import Prompt from './pages/Prompt';
 import PhoneMockup from './components/PhoneMockup';
 import CanvasDropZone from './components/CanvasDropZone';
 
+type Widget = {
+  id: string | number;
+  icon: React.ReactNode;
+  title: string;
+  category: string;
+};
+
+type LoginResponse = {
+  token: string;
+  username: string;
+  message: string;
+};
+
 function App() {
-  const [canvasWidgets, setCanvasWidgets] = useState([]);
-  const [draggedWidget, setDraggedWidget] = useState(null);
-  const x= 1;
+  const [canvasWidgets, setCanvasWidgets] = useState<Widget[]>([]);
+  const [draggedWidget, setDraggedWidget] = useState<Widget | null>(null);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Estados para los inputs del login
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleDragStart = (widget: any) => {
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleDragStart = (widget: Widget) => {
     setDraggedWidget(widget);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     if (draggedWidget) {
-      setCanvasWidgets([...canvasWidgets, draggedWidget]);
+      setCanvasWidgets((prevWidgets) => [...prevWidgets, draggedWidget]);
       setDraggedWidget(null);
     }
   };
@@ -32,17 +51,96 @@ function App() {
     e.preventDefault();
   };
 
-  // Función que "inicia sesión"
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Aquí puedes validar o hacer autentificación real
-    if (email && password) {
-      // Por ahora solo activamos el estado loggedIn
-      setIsLoggedIn(true);
-    } else {
+    if (!email || !password) {
       alert('Por favor completa ambos campos');
+      return;
     }
+
+    try {
+      const response = await axios.post<LoginResponse>(
+        'http://localhost:8080/auth/login',
+        {
+          username: email,
+          password: password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const { token } = response.data;
+      localStorage.setItem('token', token);
+      setIsLoggedIn(true);
+    } catch (error) {
+      alert('Error en la autenticación: usuario o contraseña incorrectos');
+      console.error(error);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+  };
+
+  // Simulación de respuesta IA para crear widgets
+  const getAIResponse = (prompt: string) => {
+    let newWidget: Widget;
+
+    if (prompt.toLowerCase().includes('login')) {
+      newWidget = {
+        id: Date.now(),
+        icon: (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M16 12H8m8 0v4m0-4V8a4 4 0 00-8 0v4m0 0v4m0-4H4"
+            />
+          </svg>
+        ),
+        title: 'Formulario de Login',
+        category: 'Autenticación',
+      };
+    } else {
+      newWidget = {
+        id: Date.now(),
+        icon: (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={2} />
+            <path
+              d="M8 12l2 2 4-4"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        ),
+        title: `Widget generado: ${prompt.substring(0, 15)}...`,
+        category: 'Generado',
+      };
+    }
+
+    setCanvasWidgets((prevWidgets) => [...prevWidgets, newWidget]);
   };
 
   if (!isLoggedIn) {
@@ -52,8 +150,13 @@ function App() {
           onSubmit={handleLogin}
           className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"
         >
-          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Iniciar sesión</h2>
-          <label htmlFor="email" className="block mb-2 text-gray-700 font-semibold">
+          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+            Iniciar sesión
+          </h2>
+          <label
+            htmlFor="email"
+            className="block mb-2 text-gray-700 font-semibold"
+          >
             Correo electrónico
           </label>
           <input
@@ -66,7 +169,10 @@ function App() {
             required
           />
 
-          <label htmlFor="password" className="block mb-2 text-gray-700 font-semibold">
+          <label
+            htmlFor="password"
+            className="block mb-2 text-gray-700 font-semibold"
+          >
             Contraseña
           </label>
           <input
@@ -90,15 +196,14 @@ function App() {
     );
   }
 
-  // Si ya está logueado, muestra la app principal
   return (
     <>
-      <Navbar />
+      <Navbar onLogout={handleLogout} />
       <div className="flex w-full h-screen flex-col">
         <div className="flex flex-row flex-grow">
           <div className="w-1/4">
             <div className="card bg-base-300 rounded-l-box h-full grid place-items-center">
-              <Prompt />
+              <Prompt onSendPrompt={getAIResponse} />
             </div>
           </div>
 

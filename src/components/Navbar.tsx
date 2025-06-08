@@ -1,9 +1,11 @@
+import React from 'react';
 
+type NavbarProps = {
+  onLogout: () => void;
+};
 
-export default function Navbar () {
-    
+export default function Navbar({ onLogout }: NavbarProps) {
   return (
-    <>
     <div className="navbar bg-base-100 shadow-sm">
       <div className="flex-1">
         <a className="btn btn-ghost text-xl">Flutter UI</a>
@@ -41,13 +43,13 @@ export default function Navbar () {
               <a>Settings</a>
             </li>
             <li>
-              <a>Logout</a>
+              <a onClick={onLogout} style={{ cursor: 'pointer' }}>
+                Logout
+              </a>
             </li>
           </ul>
         </div>
       </div>
     </div>
-    </>
   );
 }
-

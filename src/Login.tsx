@@ -6,13 +6,13 @@ interface LoginResponse {
   token: string;
   usuario: {
     id: number;
-    nombre: string;
-    correo: string;
+    username: string;
+    password: string;
   };
 }
 
 const Login = () => {
-  const [correo, setCorreo] = useState("");
+  const [email, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
@@ -21,9 +21,9 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post<LoginResponse>(
-        "http://localhost:8080/api/auth/login",
+        "http://localhost:8080/auth/login",
         {
-          correo,
+          email,
           password,
         }
       );
@@ -42,7 +42,7 @@ const Login = () => {
           <input
             type="email"
             placeholder="Correo electrónico"
-            value={correo}
+            value={email}
             onChange={(e) => setCorreo(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             required
